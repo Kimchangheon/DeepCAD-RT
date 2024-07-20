@@ -208,63 +208,133 @@ def get_first_filename(img_dir):
     first_filename = img_dir + '/' + train_list[0]
     return first_filename
 
-
-def download_demo(download_filename):
-    save_img_folder='datasets/'+download_filename+'_demo'
+def download_demo(download_filename, dir):
+    save_img_folder = os.path.join(dir, 'datasets', download_filename + '_demo')
     save_pth_name = download_filename + '_best_model_demo'
-    save_pth_folder='pth/'+save_pth_name
+    save_pth_folder = os.path.join(dir, 'pth', save_pth_name)
 
     if not os.path.exists(save_img_folder):
         os.makedirs(save_img_folder)
     if not os.path.exists(save_pth_folder):
         os.makedirs(save_pth_folder)
-    file_dict = {'simulate_-2.51dBSNR_1000frames': [
-        'https://zenodo.org/record/5790790/files/noise_2RPN_-2.51dBSNR_1000frames_.tif?download=1',
-        'https://zenodo.org/record/5790790/files/E_13_Iter_6198.pth?download=1',
-        'https://zenodo.org/record/5790790/files/para.yaml?download=1'],
+
+    file_dict = {
+        'simulate_-2.51dBSNR_1000frames': [
+            'https://zenodo.org/record/5790790/files/noise_2RPN_-2.51dBSNR_1000frames_.tif?download=1',
+            'https://zenodo.org/record/5790790/files/E_13_Iter_6198.pth?download=1',
+            'https://zenodo.org/record/5790790/files/para.yaml?download=1'],
         'ATP_2D': [
-        'https://zenodo.org/record/5808571/files/zoom3.0_15Hz_0.65power_20umUnderrInjury_lowSNR_MC_corrBidir.tif?download=1',
-        'https://zenodo.org/record/5808571/files/ATP_2D_E_20_Iter_6075.pth?download=1',
-        'https://zenodo.org/record/5808571/files/ATP_2D_para.yaml?download=1'],
-        'ATP_3D':['https://zenodo.org/record/5808571/files/zoom2.0_3DATP_30Hz_2umStep_60umRange_30Slice_0.1power_channel1_slice22.tif?download=1',
-                  'https://zenodo.org/record/5808571/files/ATP_3D_E_20_Iter_6350.pth?download=1',
-                  'https://zenodo.org/record/5808571/files/ATP_3D_para.yaml?download=1'],
-        'NP_2D':['https://zenodo.org/record/5808571/files/02_neutrophil_0.25power_zoom4.0_10Hz_lowSNR.tif?download=1',
-                 'https://zenodo.org/record/5808571/files/NP_2D_E_20_Iter_6150.pth?download=1',
-                 'https://zenodo.org/record/5808571/files/NP_2D_para.yaml?download=1'],
-        'NP_3D':['https://zenodo.org/record/5808571/files/zoom4.5_dz2um_slice15_power0.07_gan0.7_channel23_channel1_slice5.tif?download=1',
-                 'https://zenodo.org/record/5808571/files/NP_3D_E_20_Iter_6075.pth?download=1',
-                 'https://zenodo.org/record/5808571/files/NP_3D_para.yaml?download=1'],
-        'mouse_spine':['https://zenodo.org/record/5808571/files/1_GCaMP6f_zoom4.5_50mWpower_40umdepth_30Hz_978x492x6500_lowSNR.tif?download=1',
-                       'https://zenodo.org/record/5808571/files/mouse_spine_E_30_Iter_6060.pth?download=1',
-                       'https://zenodo.org/record/5808571/files/mouse_spine_para.yaml?download=1'],
+            'https://zenodo.org/record/5808571/files/zoom3.0_15Hz_0.65power_20umUnderrInjury_lowSNR_MC_corrBidir.tif?download=1',
+            'https://zenodo.org/record/5808571/files/ATP_2D_E_20_Iter_6075.pth?download=1',
+            'https://zenodo.org/record/5808571/files/ATP_2D_para.yaml?download=1'],
+        'ATP_3D': [
+            'https://zenodo.org/record/5808571/files/zoom2.0_3DATP_30Hz_2umStep_60umRange_30Slice_0.1power_channel1_slice22.tif?download=1',
+            'https://zenodo.org/record/5808571/files/ATP_3D_E_20_Iter_6350.pth?download=1',
+            'https://zenodo.org/record/5808571/files/ATP_3D_para.yaml?download=1'],
+        'NP_2D': [
+            'https://zenodo.org/record/5808571/files/02_neutrophil_0.25power_zoom4.0_10Hz_lowSNR.tif?download=1',
+            'https://zenodo.org/record/5808571/files/NP_2D_E_20_Iter_6150.pth?download=1',
+            'https://zenodo.org/record/5808571/files/NP_2D_para.yaml?download=1'],
+        'NP_3D': [
+            'https://zenodo.org/record/5808571/files/zoom4.5_dz2um_slice15_power0.07_gan0.7_channel23_channel1_slice5.tif?download=1',
+            'https://zenodo.org/record/5808571/files/NP_3D_E_20_Iter_6075.pth?download=1',
+            'https://zenodo.org/record/5808571/files/NP_3D_para.yaml?download=1'],
+        'mouse_spine': [
+            'https://zenodo.org/record/5808571/files/1_GCaMP6f_zoom4.5_50mWpower_40umdepth_30Hz_978x492x6500_lowSNR.tif?download=1',
+            'https://zenodo.org/record/5808571/files/mouse_spine_E_30_Iter_6060.pth?download=1',
+            'https://zenodo.org/record/5808571/files/mouse_spine_para.yaml?download=1'],
         'fish_localbrain': [
-        'https://zenodo.org/record/5808571/files/fish_localbrain_demo.zip?download=1',
-        'https://zenodo.org/record/5808571/files/fish_localbrain_E_20_Iter_6175.pth?download=1',
-        'https://zenodo.org/record/5808571/files/fish_localbrain_para.yaml?download=1'],
+            'https://zenodo.org/record/5808571/files/fish_localbrain_demo.zip?download=1',
+            'https://zenodo.org/record/5808571/files/fish_localbrain_E_20_Iter_6175.pth?download=1',
+            'https://zenodo.org/record/5808571/files/fish_localbrain_para.yaml?download=1'],
         'fish_wholebrain': [
-        'https://zenodo.org/record/5808571/files/fish_wholebrain_demo.zip?download=1',
-        'https://zenodo.org/record/5808571/files/fish_wholebrain_E_20_Iter_6140.pth?download=1',
-        'https://zenodo.org/record/5808571/files/fish_wholebrain_para.yaml?download=1'],
+            'https://zenodo.org/record/5808571/files/fish_wholebrain_demo.zip?download=1',
+            'https://zenodo.org/record/5808571/files/fish_wholebrain_E_20_Iter_6140.pth?download=1',
+            'https://zenodo.org/record/5808571/files/fish_wholebrain_para.yaml?download=1'],
         'drosophila': [
-        'https://zenodo.org/record/5808571/files/drosophila_demo.zip?download=1',
-        'https://zenodo.org/record/5808571/files/drosophila_E_30_Iter_6016.pth?download=1',
-        'https://zenodo.org/record/5808571/files/drosophila_para.yaml?download=1'],
-                 }
+            'https://zenodo.org/record/5808571/files/drosophila_demo.zip?download=1',
+            'https://zenodo.org/record/5808571/files/drosophila_E_30_Iter_6016.pth?download=1',
+            'https://zenodo.org/record/5808571/files/drosophila_para.yaml?download=1'],
+    }
 
     url_sum = file_dict[download_filename]
 
-    if not os.path.exists(save_img_folder+ '/' + download_filename +'.tif'):
-        if (download_filename == 'fish_localbrain') | (download_filename == 'fish_wholebrain') | (download_filename == 'drosophila'):
-            zip_path='datasets/' + download_filename + '_demo.zip'
-            gdown.download(url_sum[0], zip_path , quiet=False,resume=True)
+    if not os.path.exists(os.path.join(save_img_folder, download_filename + '.tif')):
+        if download_filename in ['fish_localbrain', 'fish_wholebrain', 'drosophila']:
+            zip_path = os.path.join(dir, 'datasets', download_filename + '_demo.zip')
+            gdown.download(url_sum[0], zip_path, quiet=False, resume=True)
             with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                zip_ref.extractall('datasets')
+                zip_ref.extractall(os.path.join(dir, 'datasets'))
             os.remove(zip_path)
         else:
-            gdown.download(url_sum[0], save_img_folder+ '/' + download_filename +'.tif', quiet=False,resume=True)
-    if not os.path.exists(save_pth_folder+ '/' + 'best_model.pth'):
-        gdown.download(url_sum[1], save_pth_folder+ '/' + 'best_model.pth', quiet=False,resume=True)
-    if not os.path.exists(save_pth_folder+ '/' + 'best_model.yaml'):
-        gdown.download(url_sum[2], save_pth_folder+ '/' + 'best_model.yaml', quiet=False,resume=True)
-    return save_img_folder,save_pth_name
+            gdown.download(url_sum[0], os.path.join(save_img_folder, download_filename + '.tif'), quiet=False,
+                           resume=True)
+
+    if not os.path.exists(os.path.join(save_pth_folder, 'best_model.pth')):
+        gdown.download(url_sum[1], os.path.join(save_pth_folder, 'best_model.pth'), quiet=False, resume=True)
+
+    if not os.path.exists(os.path.join(save_pth_folder, 'best_model.yaml')):
+        gdown.download(url_sum[2], os.path.join(save_pth_folder, 'best_model.yaml'), quiet=False, resume=True)
+
+    return save_img_folder, save_pth_name
+
+
+# def download_demo(download_filename):
+#     save_img_folder='datasets/'+download_filename+'_demo'
+#     save_pth_name = download_filename + '_best_model_demo'
+#     save_pth_folder='pth/'+save_pth_name
+#
+#     if not os.path.exists(save_img_folder):
+#         os.makedirs(save_img_folder)
+#     if not os.path.exists(save_pth_folder):
+#         os.makedirs(save_pth_folder)
+#     file_dict = {'simulate_-2.51dBSNR_1000frames': [
+#         'https://zenodo.org/record/5790790/files/noise_2RPN_-2.51dBSNR_1000frames_.tif?download=1',
+#         'https://zenodo.org/record/5790790/files/E_13_Iter_6198.pth?download=1',
+#         'https://zenodo.org/record/5790790/files/para.yaml?download=1'],
+#         'ATP_2D': [
+#         'https://zenodo.org/record/5808571/files/zoom3.0_15Hz_0.65power_20umUnderrInjury_lowSNR_MC_corrBidir.tif?download=1',
+#         'https://zenodo.org/record/5808571/files/ATP_2D_E_20_Iter_6075.pth?download=1',
+#         'https://zenodo.org/record/5808571/files/ATP_2D_para.yaml?download=1'],
+#         'ATP_3D':['https://zenodo.org/record/5808571/files/zoom2.0_3DATP_30Hz_2umStep_60umRange_30Slice_0.1power_channel1_slice22.tif?download=1',
+#                   'https://zenodo.org/record/5808571/files/ATP_3D_E_20_Iter_6350.pth?download=1',
+#                   'https://zenodo.org/record/5808571/files/ATP_3D_para.yaml?download=1'],
+#         'NP_2D':['https://zenodo.org/record/5808571/files/02_neutrophil_0.25power_zoom4.0_10Hz_lowSNR.tif?download=1',
+#                  'https://zenodo.org/record/5808571/files/NP_2D_E_20_Iter_6150.pth?download=1',
+#                  'https://zenodo.org/record/5808571/files/NP_2D_para.yaml?download=1'],
+#         'NP_3D':['https://zenodo.org/record/5808571/files/zoom4.5_dz2um_slice15_power0.07_gan0.7_channel23_channel1_slice5.tif?download=1',
+#                  'https://zenodo.org/record/5808571/files/NP_3D_E_20_Iter_6075.pth?download=1',
+#                  'https://zenodo.org/record/5808571/files/NP_3D_para.yaml?download=1'],
+#         'mouse_spine':['https://zenodo.org/record/5808571/files/1_GCaMP6f_zoom4.5_50mWpower_40umdepth_30Hz_978x492x6500_lowSNR.tif?download=1',
+#                        'https://zenodo.org/record/5808571/files/mouse_spine_E_30_Iter_6060.pth?download=1',
+#                        'https://zenodo.org/record/5808571/files/mouse_spine_para.yaml?download=1'],
+#         'fish_localbrain': [
+#         'https://zenodo.org/record/5808571/files/fish_localbrain_demo.zip?download=1',
+#         'https://zenodo.org/record/5808571/files/fish_localbrain_E_20_Iter_6175.pth?download=1',
+#         'https://zenodo.org/record/5808571/files/fish_localbrain_para.yaml?download=1'],
+#         'fish_wholebrain': [
+#         'https://zenodo.org/record/5808571/files/fish_wholebrain_demo.zip?download=1',
+#         'https://zenodo.org/record/5808571/files/fish_wholebrain_E_20_Iter_6140.pth?download=1',
+#         'https://zenodo.org/record/5808571/files/fish_wholebrain_para.yaml?download=1'],
+#         'drosophila': [
+#         'https://zenodo.org/record/5808571/files/drosophila_demo.zip?download=1',
+#         'https://zenodo.org/record/5808571/files/drosophila_E_30_Iter_6016.pth?download=1',
+#         'https://zenodo.org/record/5808571/files/drosophila_para.yaml?download=1'],
+#                  }
+#
+#     url_sum = file_dict[download_filename]
+#
+#     if not os.path.exists(save_img_folder+ '/' + download_filename +'.tif'):
+#         if (download_filename == 'fish_localbrain') | (download_filename == 'fish_wholebrain') | (download_filename == 'drosophila'):
+#             zip_path='datasets/' + download_filename + '_demo.zip'
+#             gdown.download(url_sum[0], zip_path , quiet=False,resume=True)
+#             with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+#                 zip_ref.extractall('datasets')
+#             os.remove(zip_path)
+#         else:
+#             gdown.download(url_sum[0], save_img_folder+ '/' + download_filename +'.tif', quiet=False,resume=True)
+#     if not os.path.exists(save_pth_folder+ '/' + 'best_model.pth'):
+#         gdown.download(url_sum[1], save_pth_folder+ '/' + 'best_model.pth', quiet=False,resume=True)
+#     if not os.path.exists(save_pth_folder+ '/' + 'best_model.yaml'):
+#         gdown.download(url_sum[2], save_pth_folder+ '/' + 'best_model.yaml', quiet=False,resume=True)
+#     return save_img_folder,save_pth_name

@@ -86,6 +86,7 @@ class trainset(Dataset):
         end_w = single_coordinate['end_w']
         init_s = single_coordinate['init_s']
         end_s = single_coordinate['end_s']
+
         input = noise_img[init_s:end_s:2, init_h:end_h, init_w:end_w]
         target = noise_img[init_s + 1:end_s:2, init_h:end_h, init_w:end_w]
         p_exc = random.random()  # generate a random number determinate whether swap input and target
@@ -464,6 +465,17 @@ def test_preprocess_chooseOne(args, img_id):
     cut_h = (patch_y - gap_y) / 2
     cut_s = (patch_t2 - gap_t2) / 2
     im_folder = args.datasets_path
+
+    # # Printing the values
+    # print(f"patch_y = {patch_y}")
+    # print(f"patch_x = {patch_x}")
+    # print(f"patch_t2 = {patch_t2}")
+    # print(f"gap_y = {gap_y}")
+    # print(f"gap_x = {gap_x}")
+    # print(f"gap_t2 = {gap_t2}")
+    # print(f"cut_w = {cut_w}")
+    # print(f"cut_h = {cut_h}")
+    # print(f"cut_s = {cut_s}")
 
     name_list = []
     coordinate_list = {}

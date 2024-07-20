@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="Black">
+    <option name="sdkName" value="Remote Python 3.9.19 (sftp://no12neni@aimi-02.aibe.uni-erlangen.de:22/home/rzlin/no12neni/miniconda3/envs/deepcadrt/bin/python)" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="RetNetOCR" project-jdk-type="Python SDK" />
 </project>

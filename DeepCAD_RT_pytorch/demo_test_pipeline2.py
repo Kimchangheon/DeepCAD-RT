@@ -15,7 +15,8 @@ from deepcad.utils import get_first_filename,download_demo
 import os
 # %% Select file(s) to be processed (download if not present)
 download_demo_file = True
-file_name_list = ['ATP_2D','ATP_3D','NP_2D','NP_3D','mouse_spine','fish_wholebrain','drosophila']
+file_name_list = ['ATP_2D','ATP_3D','NP_2D','NP_3D','mouse_spine','fish_wholebrain','fish_localbrain','drosophila']
+file_name_list=['fish_localbrain']
 for file_name in file_name_list :
     if download_demo_file:
         # file_name= 'simulate_-2.51dBSNR_1000frames' # select the demo file you want to test (e.g. 'ATP_3D', 'fish_localbrain', 'NP_3D', ...)

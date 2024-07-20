@@ -18,6 +18,7 @@ import datetime
 from .data_process import trainset, test_preprocess_chooseOne, testset, multibatch_test_save, singlebatch_test_save
 from skimage import io
 from .movie_display import test_img_display,display_img
+import re
 
 
 class training_class():
@@ -59,7 +60,7 @@ class training_class():
         self.num_workers = 0
         self.scale_factor = 1
         self.train_datasets_size = 2000
-        self.select_img_num = 1000
+        self.select_img_num = 1000 # why didn't just use train_datset_size?
         self.test_datasize = 400  # how many slices to be tested (use the first image in the folder by default)
         self.visualize_images_per_epoch = False
         self.save_test_images_per_epoch = False
@@ -91,7 +92,7 @@ class training_class():
         Important Fields:
             self.datasets_name: the sub folder of the dataset
             self.pth_path: the folder for pth file storage
-
+f
         """
         if self.datasets_path[-1]!='/':
            self.datasets_name=self.datasets_path.split("/")[-1]
@@ -151,8 +152,13 @@ class training_class():
         """
         w_num = math.floor((self.whole_x - self.patch_x) / self.gap_x) + 1
         h_num = math.floor((self.whole_y - self.patch_y) / self.gap_y) + 1
-        s_num = math.ceil(self.train_datasets_size / w_num / h_num / self.stack_num)
-        self.gap_t = math.floor((self.whole_t - self.patch_t * 2) / (s_num - 1))
+        # s_num = math.ceil(self.train_datasets_size / w_num / h_num / self.stack_num)
+        # self.gap_t = math.floor((self.whole_t - self.patch_t * 2) / (s_num - 1)) it makes gap_t as 0.
+        s_num = max(1, math.ceil(self.train_datasets_size / w_num / h_num / self.stack_num))
+        self.gap_t = max(1, math.floor((self.whole_t - self.patch_t * 2) / (s_num - 1)))
+
+
+
 
     def train_preprocess_lessMemoryMulStacks(self):
         """
@@ -174,8 +180,18 @@ class training_class():
         print('\033[1;31mImage list for training -----> \033[0m')
         self.stack_num = len(list(os.walk(self.datasets_path, topdown=False))[-1][-1])
         print('Total stack number -----> ', self.stack_num)
+        file_list = list(os.walk(self.datasets_path, topdown=False))[-1][-1]
 
-        for im_name in list(os.walk(self.datasets_path, topdown=False))[-1][-1]:
+        def numerical_sort(value):
+            # Extract the numerical part from the filename
+            parts = re.split(r'(\d+)', value)
+            # Convert numerical parts to integers and leave other parts as they are
+            parts[1::2] = map(int, parts[1::2])
+            return parts
+
+        sorted_files = sorted(file_list, key=numerical_sort)
+
+        for im_name in sorted_files:
             print('Noise image name -----> ', im_name)
             im_dir = self.datasets_path + '//' + im_name
             noise_im = tiff.imread(im_dir)
@@ -286,6 +302,12 @@ class training_class():
                 # The input volume and corresponding target volume from data loader to train the deep neural network
                 input = input.cuda()
                 target = target.cuda()
+                # Check if input and target are the same
+                # Check if input and target are the same
+                if torch.equal(input, target):
+                    print(f"Iteration {iteration}: Input and target are the same.")
+                else:
+                    print(f"Iteration {iteration}: Input and target are different.")
                 real_A = input
                 real_B = target
                 real_A = Variable(real_A)
@@ -369,6 +391,18 @@ class training_class():
 
 
     def test(self, train_epoch, train_iteration):
+        # load model
+        # model_name = "/data/no12neni/DeepCAD_RT_pytorch/pth/EGST39_A_Image2_30min_z10_202407142045/E_10_Iter_4528.pth"
+        # print("load model : ", model_name)
+        # if isinstance(self.local_model, nn.DataParallel):
+        #     self.local_model.module.load_state_dict(torch.load(model_name))  # parallel
+        #     self.local_model.eval()
+        #     print("model load succeed as parallel")
+        # else:
+        #     self.local_model.load_state_dict(torch.load(model_name))  # not parallel
+        #     self.local_model.eval()
+        #     print("model load succeed as non-parallel")
+
         """
         Pytorch testing workflow
         Args:
@@ -384,7 +418,8 @@ class training_class():
         denoise_img = np.zeros(noise_img.shape)
         input_img = np.zeros(noise_img.shape)
         test_data = testset(name_list, coordinate_list, noise_img)
-        testloader = DataLoader(test_data, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
+        testloader = DataLoader(test_data, batch_size=self.batch_size, shuffle=False,
+                                num_workers=self.num_workers)
         for iteration, (noise_patch, single_coordinate) in enumerate(testloader):
             # Pre-trained models are loaded into memory and the sub-stacks are directly fed into the model.
             noise_patch = noise_patch.cuda()
@@ -473,4 +508,5 @@ class training_class():
 
             result_name = self.pth_path + '//' + test_im_name.replace('.tif', '') + '_' + 'E_' + str(
                 train_epoch + 1).zfill(2) + '_Iter_' + str(train_iteration + 1).zfill(4) + '.tif'
+            print(output_img.shape)
             io.imsave(result_name, output_img, check_contrast=False)

@@ -15,30 +15,35 @@ from deepcad.movie_display import display
 from deepcad.utils import get_first_filename,download_demo
 
 # %% Select file(s) to be processed (download if not present)
-download_demo_file = True
+download_demo_file = False
 if download_demo_file:
     file_name='fish_localbrain' # select the demo file to be trained (e.g. 'ATP_3D', 'fish_localbrain', 'NP_3D', ...)
     datasets_path, _ = download_demo(download_filename=file_name)
 else:
-    datasets_path = 'datasets/fish_localbrain_demo'  # folder containing tif files for training
+    # datasets_path = '/data/no12neni/images/image_z_sperated/EGST39_A_Image2_30min'  # folder containing tif files for training
+    datasets_path = '/data/no12neni/images/image_z_sperated/EGST39_A_Image2_30min_z10'
+    # datasets_path = '/home/hpc/b193dc/b193dc11/DeepCAD-RT/images/image_z_sperated/EGST39_A_Image2_30min_z10'
+    # datasets_path = '/data/no12neni/datasets/simulate_-2.51dBSNR_1000frames_demo'
 
 # %% First setup some parameters for training
 n_epochs = 10               # the number of training epochs
 GPU = '0'                   # the index of GPU used for computation (e.g. '0', '0,1', '0,1,2')
-train_datasets_size = 6000  # dataset size for training (the number of patches)
+train_datasets_size = 6000  # dataset size for training (the number of patches) # limit the maximum # of patches
 patch_xy = 150              # the width and height of 3D patches
-patch_t = 150               # the time dimension of 3D patches
+min_patch_t = 30  # or another appropriate value based on your network
+patch_t = max(min_patch_t, int(150 * (342 / 6955)))           # the time dimension of 3D patches
+# patch_t = 150
 overlap_factor = 0.25       # the overlap factor between two adjacent patches
 pth_dir = './pth'           # pth file and visualization result file path
 num_workers = 4             # if you use Windows system, set this to 0.
 
 # %% Setup some parameters for result visualization during training period (optional)
-visualize_images_per_epoch = True  # choose whether to show inference performance after each epoch
+visualize_images_per_epoch = False  # choose whether to show inference performance after each epoch
 save_test_images_per_epoch = True  # choose whether to save inference image after each epoch in pth path
 
 # %% Play the demo noise movie (optional)
 # playing the first noise movie using opencv.
-display_images = True
+display_images = False
 
 if display_images:
     display_filename = get_first_filename(datasets_path)

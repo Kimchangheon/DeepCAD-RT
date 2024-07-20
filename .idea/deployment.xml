@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="no12neni@aimi-02.aibe.uni-erlangen.de:22 password (2)" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="no12neni@aimi-02.aibe.uni-erlangen.de:22 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/rzlin/no12neni/DeepCAD-RT" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="no12neni@aimi-02.aibe.uni-erlangen.de:22 password (2)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/data/no12neni/" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>

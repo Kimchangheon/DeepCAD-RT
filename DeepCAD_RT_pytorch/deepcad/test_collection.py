@@ -112,6 +112,8 @@ class testing_class():
         self.gap_x = int(self.patch_x * (1 - self.overlap_factor))  # patch gap in x
         self.gap_y = int(self.patch_y * (1 - self.overlap_factor))  # patch gap in y
         self.gap_t = int(self.patch_t * (1 - self.overlap_factor))  # patch gap in t
+        # self.gap_t = 1  # patch gap in t
+
         self.ngpu = str(self.GPU).count(',') + 1  # check the number of GPU used for testing
         self.batch_size = self.ngpu  # By default, the batch size is equal to the number of GPU for minimal memory consumption
         print('\033[1;31mTesting parameters -----> \033[0m')
@@ -212,12 +214,16 @@ class testing_class():
 
             # load model
             model_name = self.pth_dir + '//' + self.denoise_model + '//' + pth_name
+            print("load model : ", model_name)
             if isinstance(self.local_model, nn.DataParallel):
                 self.local_model.module.load_state_dict(torch.load(model_name))  # parallel
                 self.local_model.eval()
+                print("model load succeed as parallel")
             else:
                 self.local_model.load_state_dict(torch.load(model_name))  # not parallel
                 self.local_model.eval()
+                print("model load succeed as non-parallel")
+
             self.local_model.cuda()
             self.print_img_name = False
             # test all stacks
@@ -281,8 +287,10 @@ class testing_class():
                         for id in range(postprocess_turn):
                             output_patch, raw_patch, stack_start_w, stack_end_w, stack_start_h, stack_end_h, stack_start_s, stack_end_s = multibatch_test_save(
                                 single_coordinate, id, output_image, raw_image)
+
                             output_patch=output_patch+img_mean
                             raw_patch=raw_patch+img_mean
+
                             denoise_img[stack_start_s:stack_end_s, stack_start_h:stack_end_h,
                             stack_start_w:stack_end_w] \
                                 = output_patch * (np.sum(raw_patch) / np.sum(output_patch)) ** 0.5
@@ -292,8 +300,10 @@ class testing_class():
                     else:
                         output_patch, raw_patch, stack_start_w, stack_end_w, stack_start_h, stack_end_h, stack_start_s, stack_end_s = singlebatch_test_save(
                             single_coordinate, output_image, raw_image)
+
                         output_patch=output_patch+img_mean
                         raw_patch=raw_patch+img_mean
+
                         denoise_img[stack_start_s:stack_end_s, stack_start_h:stack_end_h, stack_start_w:stack_end_w] \
                             = output_patch * (np.sum(raw_patch) / np.sum(output_patch)) ** 0.5
                         input_img[stack_start_s:stack_end_s, stack_start_h:stack_end_h, stack_start_w:stack_end_w] \
@@ -312,7 +322,7 @@ class testing_class():
                                      norm_max_percent=99)
 
                 # Save inference image
-
+                # output_img = output_img[50:self.test_datasize - 50, :, :]
                 if input_data_type == 'uint16':
                     output_img=np.clip(output_img, 0, 65535)
                     output_img = output_img.astype('uint16')
